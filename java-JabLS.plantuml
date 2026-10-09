@@ -1,0 +1,238 @@
+@startuml
+
+!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class BibDefinitionProvider {
+  + BibDefinitionProvider(FilePreferences, LspParserHandler): 
+  - EMPTY_RANGE: Range
+  - preferences: FilePreferences
+  - LOGGER: Logger
+  + provideDefinition(String, String, Position): List<Location>
+  + provideDocumentLinks(String, String): List<DocumentLink>
+}
+class BibtexTextDocumentService {
+  + BibtexTextDocumentService(RemoteMessageHandler, LspClientHandler, LspDiagnosticHandler, LspLinkHandler): 
+  - linkHandler: LspLinkHandler
+  - fileUriToLanguageId: Map<String, String>
+  - LOGGER: Logger
+  - messageHandler: RemoteMessageHandler
+  - contentCache: Map<String, String>
+  - diagnosticHandler: LspDiagnosticHandler
+  - client: LanguageClient
+  - clientHandler: LspClientHandler
+  + documentLink(DocumentLinkParams): CompletableFuture<List<DocumentLink>>
+  + documentLinkResolve(DocumentLink): CompletableFuture<DocumentLink>
+  + didClose(DidCloseTextDocumentParams): void
+  + didOpen(DidOpenTextDocumentParams): void
+  + completion(CompletionParams): CompletableFuture<Either<List<CompletionItem>, CompletionList>>
+  + didSave(DidSaveTextDocumentParams): void
+  + definition(DefinitionParams): CompletableFuture<Either<List<Location>, List<LocationLink>>>
+  + didChange(DidChangeTextDocumentParams): void
+  + setClient(LanguageClient): void
+}
+class BibtexWorkspaceService {
+  + BibtexWorkspaceService(LspClientHandler, LspDiagnosticHandler): 
+  - client: LanguageClient
+  - diagnosticHandler: LspDiagnosticHandler
+  - clientHandler: LspClientHandler
+  - LOGGER: Logger
+  + didChangeWatchedFiles(DidChangeWatchedFilesParams): void
+  + didChangeConfiguration(DidChangeConfigurationParams): void
+  + setClient(LanguageClient): void
+}
+class DefinitionProvider {
+  + DefinitionProvider(LspParserHandler): 
+  # citationCommandPattern: Pattern
+  # parserHandler: LspParserHandler
+  # citationKeyInsidePattern: Pattern
+  - findCitationKeys(String): List<KeyBounds>
+  + provideDocumentLinks(String, String): List<DocumentLink>
+  # createLocation(Range, String): Location
+  + provideDefinition(String, String, Position): List<Location>
+  ~ getCitationKeyAtPosition(String, Position): Optional<String>
+  # safeGroup(Matcher, String): Optional<String>
+  # createDocumentLink(Range, String): DocumentLink
+  ~ getRangeFromEntry(String, BibEntry): Range
+}
+class DefinitionProviderFactory {
+  + DefinitionProviderFactory(): 
+  - PROVIDER_MAP: Map<String, DefinitionProvider>
+  + getDefinitionProvider(FilePreferences, LspParserHandler, String): Optional<DefinitionProvider>
+}
+class ExtensionSettings {
+  - ExtensionSettings(): 
+  - integrityCheck: boolean
+  - LOGGER: Logger
+  - consistencyCheckRequired: boolean
+  - consistencyCheck: boolean
+  - consistencyCheckOptional: boolean
+  - consistencyCheckUnknown: boolean
+  + isIntegrityCheck(): boolean
+  + isConsistencyCheck(): boolean
+  + isConsistencyCheckUnknown(): boolean
+  + toString(): String
+  + isConsistencyCheckOptional(): boolean
+  + isConsistencyCheckRequired(): boolean
+  + copyFromJsonObject(JsonObject): void
+  + getDefaultSettings(): ExtensionSettings
+}
+entity KeyBounds << record >> {
+  - KeyBounds(String, int, int): 
+  - key: String
+  - start: int
+  - end: int
+  + start(): int
+  + key(): String
+  + end(): int
+}
+class LanguageServerController {
+  + LanguageServerController(CliPreferences, JournalAbbreviationRepository, BibEntryTypesManager): 
+  - lspLauncher: LspLauncher
+  - bibEntryTypesManager: BibEntryTypesManager
+  - abbreviationRepository: JournalAbbreviationRepository
+  - LOGGER: Logger
+  - cliPreferences: CliPreferences
+  + start(RemoteMessageHandler, int): void
+  + stop(): void
+  + close(): void
+}
+class LatexDefinitionProvider {
+  + LatexDefinitionProvider(LspParserHandler): 
+  - latexParser: LatexParser
+  + provideDocumentLinks(String, String): List<DocumentLink>
+  + provideDefinition(String, String, Position): List<Location>
+}
+class LspClientHandler {
+  + LspClientHandler(RemoteMessageHandler, CliPreferences, JournalAbbreviationRepository, BibEntryTypesManager): 
+  + LspClientHandler(RemoteMessageHandler, CliPreferences, JournalAbbreviationRepository, BibEntryTypesManager, boolean): 
+  - standalone: boolean
+  - settings: ExtensionSettings
+  - linkHandler: LspLinkHandler
+  - LOGGER: Logger
+  - workspaceService: BibtexWorkspaceService
+  - messageHandler: RemoteMessageHandler
+  - client: LanguageClient
+  - diagnosticHandler: LspDiagnosticHandler
+  - parserHandler: LspParserHandler
+  - textDocumentService: BibtexTextDocumentService
+  + getWorkspaceService(): WorkspaceService
+  + initialize(InitializeParams): CompletableFuture<InitializeResult>
+  + isStandalone(): boolean
+  + connect(LanguageClient): void
+  + shutdown(): CompletableFuture<Object>
+  + exit(): void
+  + getTextDocumentService(): TextDocumentService
+  + getSettings(): ExtensionSettings
+}
+class LspConsistencyCheck {
+  + LspConsistencyCheck(ExtensionSettings): 
+  - settings: ExtensionSettings
+  + check(ParserResult, BibEntryTypesManager): List<Diagnostic>
+}
+class LspDiagnosticBuilder {
+  - LspDiagnosticBuilder(): 
+  - severity: DiagnosticSeverity
+  - parserResult: ParserResult
+  - source: String
+  - DEFAULT_SOURCE: String
+  - field: Field
+  - entry: BibEntry
+  - explicitRange: Range
+  - message: String
+  + setMessage(String): LspDiagnosticBuilder
+  - computeRange(): Range
+  + create(String): LspDiagnosticBuilder
+  + setEntry(BibEntry): LspDiagnosticBuilder
+  + create(ParserResult, String): LspDiagnosticBuilder
+  + setSource(String): LspDiagnosticBuilder
+  + setField(Field): LspDiagnosticBuilder
+  + setRange(Range): LspDiagnosticBuilder
+  + build(): Diagnostic
+  + setSeverity(DiagnosticSeverity): LspDiagnosticBuilder
+  + setRange(Range): LspDiagnosticBuilder
+  + setParserResult(ParserResult): LspDiagnosticBuilder
+}
+class LspDiagnosticHandler {
+  + LspDiagnosticHandler(LspClientHandler, LspParserHandler, CliPreferences, JournalAbbreviationRepository, BibEntryTypesManager): 
+  - parserHandler: LspParserHandler
+  - lspIntegrityCheck: LspIntegrityCheck
+  - lspConsistencyCheck: LspConsistencyCheck
+  - cliPreferences: CliPreferences
+  - consistencyDiagnosticsCache: Map<String, List<Diagnostic>>
+  - NO_VERSION: int
+  - clientHandler: LspClientHandler
+  - bibEntryTypesManager: BibEntryTypesManager
+  - integrityDiagnosticsCache: Map<String, List<Diagnostic>>
+  - LOGGER: Logger
+  - computeDiagnostics(String, String): List<Diagnostic>
+  + refreshDiagnostics(LanguageClient): void
+  + computeAndPublishDiagnostics(LanguageClient, String, String, Integer): void
+  + publishDiagnostics(LanguageClient, String, List<Diagnostic>): void
+  - getFinalDiagnosticsList(String): List<Diagnostic>
+  + publishDiagnostics(LanguageClient, String, Integer, List<Diagnostic>): void
+}
+class LspIntegrityCheck {
+  + LspIntegrityCheck(CliPreferences, JournalAbbreviationRepository): 
+  - abbreviationRepository: JournalAbbreviationRepository
+  - cliPreferences: CliPreferences
+  - LOGGER: Logger
+  - ALLOW_INTEGER_EDITION: boolean
+  + check(ParserResult): List<Diagnostic>
+}
+class LspLauncher {
+  + LspLauncher(RemoteMessageHandler, CliPreferences, JournalAbbreviationRepository, BibEntryTypesManager, int): 
+  + LspLauncher(RemoteMessageHandler, CliPreferences, int): 
+  + LspLauncher(JabRefCliPreferences, Integer): 
+  - threadPool: ExecutorService
+  - serverSocket: ServerSocket
+  - messageHandler: RemoteMessageHandler
+  - running: boolean
+  - cliPreferences: CliPreferences
+  - abbreviationRepository: JournalAbbreviationRepository
+  - port: int
+  - standalone: boolean
+  - bibEntryTypesManager: BibEntryTypesManager
+  - LOGGER: Logger
+  + isStandalone(): boolean
+  + isRunning(): boolean
+  + run(): void
+  - handleClient(Socket): void
+  + interrupt(): void
+}
+class LspLinkHandler {
+  + LspLinkHandler(LspClientHandler, LspParserHandler, FilePreferences): 
+  - LOGGER: Logger
+  - clientHandler: LspClientHandler
+  - parserHandler: LspParserHandler
+  - preferences: FilePreferences
+  + provideDefinition(String, String, String, Position): CompletableFuture<Either<List<Location>, List<LocationLink>>>
+  + provideDocumentLinks(String, String, String): CompletableFuture<List<DocumentLink>>
+}
+class LspParserHandler {
+  + LspParserHandler(): 
+  - parserResults: Map<String, ParserResult>
+  + getParserResultForUri(String): Optional<ParserResult>
+  + parserResultFromString(String, String, ImportFormatPreferences): ParserResult
+  + searchForEntryByCitationKey(String): Map<String, List<BibEntry>>
+}
+class LspRangeUtil {
+  + LspRangeUtil(): 
+  + convertToLspRange(int, int, int): Range
+  + isRangeInRange(Range, Range): boolean
+  + comparePositions(Position, Position): int
+  + convertToLspPosition(String, int): Position
+  + toOffset(String, Position): int
+  + convertToLspRange(String, int, int): Range
+  + convertToLspRange(Range): Range
+  + isPositionInRange(Position, Range): boolean
+}
+class MarkdownDefinitionProvider {
+  + MarkdownDefinitionProvider(LspParserHandler): 
+  - CITATION_COMMAND_PATTERN: Pattern
+  - CITATION_KEY_INSIDE_PATTERN: Pattern
+}
+
+KeyBounds                   +-[#820000,plain]-  DefinitionProvider         
+@enduml

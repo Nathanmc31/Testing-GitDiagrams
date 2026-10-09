@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>C:/Users/natha/Desktop/CompSci Homework/JabRef/jabref-main/jabls/src/main/java</OriginalElement>
+  <nodes>
+    <node x="1039.7686009805873" y="2505.8193635385796">org.jabref.languageserver.util.definition.BibDefinitionProvider</node>
+    <node x="287.0954543304969" y="-248.80151497490942">org.jabref.languageserver.util.definition.LatexDefinitionProvider</node>
+    <node x="908.7823999425973" y="743.8400309446625">org.jabref.languageserver.ExtensionSettings</node>
+    <node x="774.2949552226761" y="-224.93699303665278">org.jabref.languageserver.util.LspConsistencyCheck</node>
+    <node x="850.7099717404385" y="272.4000989445201">org.jabref.languageserver.util.definition.DefinitionProvider</node>
+    <node x="956.2651277959292" y="1906.227514754832">org.jabref.languageserver.LspClientHandler</node>
+    <node x="956.417496313221" y="-48.577538505217206">org.jabref.languageserver.controller.LanguageServerController</node>
+    <node x="120.6042993827457" y="1628.724537479881">org.jabref.languageserver.BibtexTextDocumentService</node>
+    <node x="247.3329155503552" y="845.5683902368575">org.jabref.languageserver.util.definition.DefinitionProviderFactory</node>
+    <node x="-382.79957116553226" y="2327.223032964836">org.jabref.languageserver.util.LspLinkHandler</node>
+    <node x="39.23665215556008" y="10.75904526345866">org.jabref.languageserver.util.definition.MarkdownDefinitionProvider</node>
+    <node x="264.75288758993815" y="1021.1892365917829">org.jabref.languageserver.util.LspDiagnosticBuilder</node>
+    <node x="457.639227130578" y="-35.44799477633197">org.jabref.languageserver.util.LspIntegrityCheck</node>
+    <node x="443.86868128021865" y="2164.9318858002434">org.jabref.languageserver.BibtexWorkspaceService</node>
+    <node x="276.38421108997284" y="540.781059426754">org.jabref.languageserver.util.LspParserHandler</node>
+    <node x="503.7489680695391" y="2527.644389530976">org.jabref.languageserver.util.LspDiagnosticHandler</node>
+    <node x="359.601361473198" y="212.3814265060204">org.jabref.languageserver.util.LspRangeUtil</node>
+    <node x="-246.75026761370373" y="409.39228825376426">org.jabref.languageserver.LspLauncher</node>
+    <node x="713.9893978899638" y="1316.7024015952968">org.jabref.languageserver.util.definition.DefinitionProvider.KeyBounds</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.jabref.languageserver.util.definition.DefinitionProvider.KeyBounds" target="org.jabref.languageserver.util.definition.DefinitionProvider" relationship="INNER_CLASS">
+      <point x="42.34351766039134" y="-105.5" />
+      <point x="-195.8770561900833" y="165.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Compact" zoom="0.6745593382580446" showDependencies="false" x="394.175686450168" y="1004.9136" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
